@@ -6,21 +6,29 @@ import requests
 
 __ARTICLE_BASE_URL__ = 'http://www.journaltocs.ac.uk/api/articles/'
 __JOURNAL_BASE_URL__ = 'http://www.journaltocs.ac.uk/api/journals/'
-__UESR_BASE_URL = 'http://www.journaltocs.ac.uk/api/user/'
+__USER_BASE_URL__ = 'http://www.journaltocs.ac.uk/api/user/'
+
+
+def _convert_x_to_10(x):
+	return int(x) if x != 'X' else 10
+
 
 def _is_doi(search_term):
-	''' Test if argument is a DOI '''
-    search_term = search_term.lower()
+	"""Test if argument is a DOI
+	"""
+	search_term = search_term.lower()
 
 	return (search_term.startswith('doi:') or search_term.startswith('10.') or 'doi.org/' in search_term)
 
+
 def _is_issn(val):
-    ''' Test if argument is an ISSN number '''
-    val = val.replace('-', '').replace(' ', '')
-    if (len(val) != 8):
-        return False
-    r = sum([(8 - i) * (lambda x: if x != 'X' int(x) else 10) for i, x in enumerate(val)])
-    return not (r % 11)
+	"""Test if argument is an ISSN number
+	"""
+	val = val.replace('-', '').replace(' ', '')
+	if (len(val) != 8):
+		return False
+	r = sum([(8 - i) * (_convert_x_to_10(x)) for i, x in enumerate(val)])
+	return not (r % 11)
 
 def _query_api(url, params):
 
